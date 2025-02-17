@@ -87,7 +87,7 @@ class SelectiveScanCuda(torch.autograd.Function):
         return out
     
     @staticmethod
-    @torch.cuda.amp.custom_bwd
+    @torch.amp.custom_bwd(device_type='cuda')
     def backward(ctx, dout, *args):
         u, delta, A, B, C, D, delta_bias, x = ctx.saved_tensors
         backend = ctx.backend
