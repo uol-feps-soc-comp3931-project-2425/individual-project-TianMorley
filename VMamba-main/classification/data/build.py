@@ -43,7 +43,11 @@ except:
 
 def build_loader(config):
     config.defrost()
-    dataset_train, config.MODEL.NUM_CLASSES = build_dataset(is_train=True, config=config)
+    if not config.EVAL_MODE:  # Only load training data if NOT in eval mode
+        dataset_train, config.MODEL.NUM_CLASSES = build_dataset(is_train=True, config=config)
+        print(f"rank {dist.get_rank()} successfully built train dataset")
+    else:
+        dataset_train = None  # No training dataset in evaluation mode
     config.freeze()
     print(f"rank {dist.get_rank()} successfully build train dataset")
     dataset_val, _ = build_dataset(is_train=False, config=config)
