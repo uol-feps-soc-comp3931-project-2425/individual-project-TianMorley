@@ -43,17 +43,7 @@ except:
 
 def build_loader(config):
     config.defrost()
-    
-    if config.EVAL_MODE:  # Only load test dataset in evaluation mode
-        dataset_train = None
-        dataset_val = None
-        dataset_test = build_dataset(is_train=False, is_test=True, config=config)
-        print(f"rank {dist.get_rank()} successfully built test dataset")
-    else:  # Training mode
-        dataset_train, config.MODEL.NUM_CLASSES = build_dataset(is_train=True, config=config)
-        dataset_val, _ = build_dataset(is_train=False, config=config)
-        dataset_test = None
-
+    dataset_train, config.MODEL.NUM_CLASSES = build_dataset(is_train=True, config=config)
     config.freeze()
 
     num_tasks = dist.get_world_size()
