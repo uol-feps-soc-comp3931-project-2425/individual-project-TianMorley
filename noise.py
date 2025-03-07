@@ -3,18 +3,17 @@ import numpy as np
 import os
 from tqdm import tqdm
 
-# Define paths
+#paths
 input_dir = "/kaggle/input/your-dataset"
 output_dir = "/kaggle/working/your-dataset-noisy"
 os.makedirs(output_dir, exist_ok=True)
 
-# Function to add Gaussian noise
 def add_gaussian_noise(image, mean=0, std=25):
     gauss = np.random.normal(mean, std, image.shape).astype(np.int16)
     noisy_img = np.clip(image.astype(np.int16) + gauss, 0, 255).astype(np.uint8)
     return noisy_img
 
-# Apply noise and save images
+# apply noise
 for img_name in tqdm(os.listdir(input_dir), desc="Processing Images"):
     if not img_name.lower().endswith((".png", ".jpg", ".jpeg")):
         continue  
