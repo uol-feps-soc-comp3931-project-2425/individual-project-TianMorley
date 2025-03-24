@@ -40,6 +40,36 @@ if torch.multiprocessing.get_start_method() != "spawn":
     print(f"||{torch.multiprocessing.get_start_method()}||", end="")
     torch.multiprocessing.set_start_method("spawn", force=True)
 
+class EarlyStopping:
+    def __init__(self, patience=10, delta=0.0, verbose=False):
+        self.patience = patience
+        self.delta = delta
+        self.counter = 0
+        self.best_loss = None
+        self.early_stop = False
+        self.verbose = verbose
+
+    def __call__(self, val_loss):
+        if self.best_loss is None:
+            self.best_loss = val_loss
+        elif val_loss > self.best_loss - self.delta:
+            self.counter += 1
+            if self.verbose:
+                logger.info(f"EarlyStopping counter: {self.counter} out of {self.patience}")
+            if self.counter >= self.patience:
+                self.early_stop = True
+        else:
+            self.best_loss = val_loss
+            self.counter = 0
+
+
+early_stopper = EarlyStopping(
+    patience=args.early_stop_patience,
+    delta=args.early_stop_delta,
+    verbose=True
+)
+
+
 def str2bool(v):
     """
     Converts string to bool type; enables command line 
@@ -88,6 +118,9 @@ def parse_option():
 
     parser.add_argument('--fused_layernorm', action='store_true', help='Use fused layernorm.')
     parser.add_argument('--optim', type=str, help='overwrite optimizer if provided, can be adamw/sgd.')
+    
+    parser.add_argument('--early-stop-patience', type=int, default=10, help='Early stopping patience')
+    parser.add_argument('--early-stop-delta', type=float, default=0.0, help='Minimum change to qualify as improvement')
 
     # EMA related parameters
     parser.add_argument('--model_ema', type=str2bool, default=True)
@@ -216,6 +249,12 @@ def main(config, args):
             logger.info(f"Accuracy of the network on the {len(dataset_val)} test images: {acc1_ema:.1f}%")
             max_accuracy_ema = max(max_accuracy_ema, acc1_ema)
             logger.info(f'Max accuracy ema: {max_accuracy_ema:.2f}%')
+        
+        early_stopper(loss)
+        if early_stopper.early_stop:
+            logger.info(f"Early stopping triggered at epoch {epoch}")
+            break
+
 
 
     total_time = time.time() - start_time
