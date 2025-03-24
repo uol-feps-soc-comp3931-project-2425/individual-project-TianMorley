@@ -40,34 +40,6 @@ if torch.multiprocessing.get_start_method() != "spawn":
     print(f"||{torch.multiprocessing.get_start_method()}||", end="")
     torch.multiprocessing.set_start_method("spawn", force=True)
 
-class EarlyStopping:
-    def __init__(self, patience=10, delta=0.0, verbose=False):
-        self.patience = patience
-        self.delta = delta
-        self.counter = 0
-        self.best_loss = None
-        self.early_stop = False
-        self.verbose = verbose
-
-    def __call__(self, val_loss):
-        if self.best_loss is None:
-            self.best_loss = val_loss
-        elif val_loss > self.best_loss - self.delta:
-            self.counter += 1
-            if self.verbose:
-                logger.info(f"EarlyStopping counter: {self.counter} out of {self.patience}")
-            if self.counter >= self.patience:
-                self.early_stop = True
-        else:
-            self.best_loss = val_loss
-            self.counter = 0
-
-
-early_stopper = EarlyStopping(
-    patience=args.early_stop_patience,
-    delta=args.early_stop_delta,
-    verbose=True
-)
 
 
 def str2bool(v):
@@ -141,6 +113,36 @@ def main(config, args):
 
     logger.info(f"Creating model:{config.MODEL.TYPE}/{config.MODEL.NAME}")
     model = build_model(config)
+
+    class EarlyStopping:
+        
+        def __init__(self, patience=10, delta=0.0, verbose=False):
+            self.patience = patience
+            self.delta = delta
+            self.counter = 0
+            self.best_loss = None
+            self.early_stop = False
+            self.verbose = verbose
+
+        def __call__(self, val_loss):
+            if self.best_loss is None:
+                self.best_loss = val_loss
+            elif val_loss > self.best_loss - self.delta:
+                self.counter += 1
+                if self.verbose:
+                    logger.info(f"EarlyStopping counter: {self.counter} out of {self.patience}")
+                if self.counter >= self.patience:
+                    self.early_stop = True
+            else:
+                self.best_loss = val_loss
+                self.counter = 0
+
+
+    early_stopper = EarlyStopping(
+        patience=args.early_stop_patience,
+        delta=args.early_stop_delta,
+        verbose=True
+    )
 
     if dist.get_rank() == 0:
         if hasattr(model, 'flops'):
