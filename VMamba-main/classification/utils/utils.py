@@ -61,9 +61,15 @@ def load_pretrained_ema(config, model, logger, model_ema: ModelEma=None):
     checkpoint = torch.load(config.MODEL.PRETRAINED, map_location='cpu')
     
     if 'model' in checkpoint:
-        msg = model.load_state_dict(checkpoint['model'], strict=False)
+        state_dict = checkpoint['model']
+        
+        # Remove incompatible classification head weights
+        state_dict = {k: v for k, v in state_dict.items() if not k.startswith('head.')}
+
+        msg = model.load_state_dict(state_dict, strict=False)
         logger.warning(msg)
-        logger.info(f"=> loaded 'model' successfully from '{config.MODEL.PRETRAINED}'")
+        logger.info(f"=> loaded pretrained weights (except classifier head) from '{config.MODEL.PRETRAINED}'")
+
     else:
         logger.warning(f"No 'model' found in {config.MODEL.PRETRAINED}! ")
 
