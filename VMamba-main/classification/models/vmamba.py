@@ -1117,14 +1117,14 @@ class SS2Dm0:
 class SS2D(nn.Module, SS2Dv0, SS2Dv2, SS2Dv3, SS2Dm0):
     def __init__(
         self,
-        # basic dims ===========
+        # basic dims =========== 
         d_model=96,
         d_state=16,
         ssm_ratio=2.0,
         dt_rank="auto",
         act_layer=nn.SiLU,
         # dwconv ===============
-        d_conv=3, # < 2 means no conv 
+        d_conv=3,  # < 2 means no conv 
         conv_bias=True,
         # ======================
         dropout=0.0,
@@ -1139,16 +1139,34 @@ class SS2D(nn.Module, SS2Dv0, SS2Dv2, SS2Dv3, SS2Dm0):
         # ======================
         forward_type="v2",
         channel_first=False,
+        config=None,  # ✅ Add config parameter here
         # ======================
         **kwargs,
     ):
-        nn.Module.__init__(self)
+        super().__init__()
+        self.config = config  # ✅ Save config as instance attribute
+
         kwargs.update(
-            d_model=d_model, d_state=d_state, ssm_ratio=ssm_ratio, dt_rank=dt_rank,
-            act_layer=act_layer, d_conv=d_conv, conv_bias=conv_bias, dropout=dropout, bias=bias,
-            dt_min=dt_min, dt_max=dt_max, dt_init=dt_init, dt_scale=dt_scale, dt_init_floor=dt_init_floor,
-            initialize=initialize, forward_type=forward_type, channel_first=channel_first,
+            d_model=d_model,
+            d_state=d_state,
+            ssm_ratio=ssm_ratio,
+            dt_rank=dt_rank,
+            act_layer=act_layer,
+            d_conv=d_conv,
+            conv_bias=conv_bias,
+            dropout=dropout,
+            bias=bias,
+            dt_min=dt_min,
+            dt_max=dt_max,
+            dt_init=dt_init,
+            dt_scale=dt_scale,
+            dt_init_floor=dt_init_floor,
+            initialize=initialize,
+            forward_type=forward_type,
+            channel_first=channel_first,
+            config=config,  # ✅ Pass config downstream in kwargs
         )
+
         if forward_type in ["v0", "v0seq"]:
             self.__initv0__(seq=("seq" in forward_type), **kwargs)
         elif forward_type.startswith("xv"):
@@ -1157,6 +1175,7 @@ class SS2D(nn.Module, SS2Dv0, SS2Dv2, SS2Dv3, SS2Dm0):
             self.__initm0__(**kwargs)
         else:
             self.__initv2__(**kwargs)
+
 
 
 # =====================================================
