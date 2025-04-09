@@ -1187,6 +1187,7 @@ class VSSBlock(nn.Module):
         post_norm: bool = False,
         # =============================
         _SS2D: type = SS2D,
+        config=None,
         **kwargs,
     ):
         super().__init__()
@@ -1285,6 +1286,7 @@ class VSSM(nn.Module):
         posembed=False,
         imgsize=224,
         _SS2D=SS2D,
+        config=None,
         # =========================
         **kwargs,
     ):
@@ -1363,6 +1365,7 @@ class VSSM(nn.Module):
                 gmlp=gmlp,
                 # =================
                 _SS2D=_SS2D,
+                config=config
             ))
 
         self.classifier = nn.Sequential(OrderedDict(
@@ -1470,6 +1473,7 @@ class VSSM(nn.Module):
         mlp_act_layer=nn.GELU,
         mlp_drop_rate=0.0,
         gmlp=False,
+        config=None,
         # ===========================
         _SS2D=SS2D,
         **kwargs,
@@ -1498,6 +1502,7 @@ class VSSM(nn.Module):
                 gmlp=gmlp,
                 use_checkpoint=use_checkpoint,
                 _SS2D=_SS2D,
+                config=None,
             ))
         
         return nn.Sequential(OrderedDict(
