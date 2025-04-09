@@ -95,6 +95,8 @@ _C.MODEL.VSSM.DOWNSAMPLE = "v2"
 _C.MODEL.VSSM.PATCHEMBED = "v2"
 _C.MODEL.VSSM.POSEMBED = False
 _C.MODEL.VSSM.GMLP = False
+_C.MODEL.VSSM.SSM_LOW_RANK = True  # Enable or disable low-rank factorisation
+
 
 # -----------------------------------------------------------------------------
 # Training settings

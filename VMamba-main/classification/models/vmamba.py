@@ -296,6 +296,13 @@ class SS2Dv0:
         self.A_logs, self.Ds, self.dt_projs_weight, self.dt_projs_bias = mamba_init.init_dt_A_D(
             d_state, dt_rank, d_inner, dt_scale, dt_init, dt_min, dt_max, dt_init_floor, k_group=4,
         )
+        # === Low-rank factorisation setup ===
+        self.config = kwargs.get('config', None)
+        if self.config is not None and getattr(self.config.MODEL.VSSM, 'SSM_LOW_RANK', False):
+            rank = max(1, int(self.d_inner * self.config.MODEL.VSSM.SSM_RANK_RATIO))
+            self.U = nn.Parameter(torch.randn(self.d_inner, rank))
+            self.V = nn.Parameter(torch.randn(self.d_inner, rank))
+
 
         # out proj =======================================
         self.out_norm = nn.LayerNorm(d_inner)
@@ -616,7 +623,10 @@ class SS2Dv2:
 
             xs = xs.view(B, -1, L)
             dts = dts.contiguous().view(B, -1, L)
-            As = -self.A_logs.to(torch.float).exp() # (k * c, d_state)
+            if self.config is not None and getattr(self.config.MODEL.VSSM, 'SSM_LOW_RANK', False):
+                As = torch.matmul(self.U, self.V.transpose(-1, -2))  # Low-rank propagation matrix
+            else:
+                As = -self.A_logs.to(torch.float).exp()  # Default full-rank matrix
             Ds = self.Ds.to(torch.float) # (K * c)
             Bs = Bs.contiguous().view(B, K, N, L)
             Cs = Cs.contiguous().view(B, K, N, L)
@@ -1209,6 +1219,7 @@ class VSSBlock(nn.Module):
                 # ==========================
                 forward_type=forward_type,
                 channel_first=channel_first,
+                config=kwargs.get('config', None),
             )
         
         self.drop_path = DropPath(drop_path)
