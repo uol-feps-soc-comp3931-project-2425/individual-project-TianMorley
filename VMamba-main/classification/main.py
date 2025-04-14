@@ -395,8 +395,26 @@ def validate(config, data_loader, model):
         all_preds_np = np.concatenate(all_preds)
         all_targets_np = np.concatenate(all_targets)
         cm = confusion_matrix(all_targets_np, all_preds_np)
+
+        labels = [
+            'Shih-Tzu',
+            'Rhodesian Ridgeback',
+            'Beagle',
+            'English Foxhound',
+            'Australian Terrier',
+            'Border Terrier',
+            'Golden Retriever',
+            'Old English Sheepdog',
+            'Samoyed',
+            'Dingo'
+        ]
+
+        import pandas as pd
+        cm_df = pd.DataFrame(cm, index=labels, columns=labels)
+
         print("\nConfusion Matrix:")
-        print(cm)
+        print(cm_df)
+
 
     return acc1_meter.avg, acc5_meter.avg, loss_meter.avg
 
