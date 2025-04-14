@@ -5,6 +5,7 @@
 # Copyright (c) 2021 Microsoft
 # Licensed under The MIT License [see LICENSE for details]
 # Written by Ze Liu
+# Changes made by Tian Morley
 # --------------------------------------------------------
 
 import os
@@ -20,6 +21,7 @@ import torch
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 
+
 from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy
 from timm.utils import accuracy, AverageMeter
 
@@ -31,6 +33,8 @@ from utils.optimizer import build_optimizer
 from utils.logger import create_logger
 from utils.utils import  NativeScalerWithGradNormCount, auto_resume_helper, reduce_tensor
 from utils.utils import load_checkpoint_ema, load_pretrained_ema, save_checkpoint_ema
+from sklearn.metrics import confusion_matrix
+import numpy as np
 
 from fvcore.nn import FlopCountAnalysis, flop_count_str, flop_count
 
@@ -341,6 +345,8 @@ def validate(config, data_loader, model):
     criterion = torch.nn.CrossEntropyLoss()
     model.eval()
 
+    all_preds = []
+    all_targets = []
     batch_time = AverageMeter()
     loss_meter = AverageMeter()
     acc1_meter = AverageMeter()
@@ -354,7 +360,10 @@ def validate(config, data_loader, model):
         # compute output
         with torch.cuda.amp.autocast(enabled=config.AMP_ENABLE):
             output = model(images)
-
+            
+        preds = output.argmax(dim=1)
+        all_preds.append(preds.cpu().numpy())
+        all_targets.append(target.cpu().numpy())
         # measure accuracy and record loss
         loss = criterion(output, target)
         acc1, acc5 = accuracy(output, target, topk=(1, 5))
@@ -381,6 +390,14 @@ def validate(config, data_loader, model):
                 f'Acc@5 {acc5_meter.val:.3f} ({acc5_meter.avg:.3f})\t'
                 f'Mem {memory_used:.0f}MB')
     logger.info(f' * Acc@1 {acc1_meter.avg:.3f} Acc@5 {acc5_meter.avg:.3f}')
+    
+    if config.EVAL_MODE:
+        all_preds_np = np.concatenate(all_preds)
+        all_targets_np = np.concatenate(all_targets)
+        cm = confusion_matrix(all_targets_np, all_preds_np)
+        print("\nConfusion Matrix:")
+        print(cm)
+
     return acc1_meter.avg, acc5_meter.avg, loss_meter.avg
 
 
