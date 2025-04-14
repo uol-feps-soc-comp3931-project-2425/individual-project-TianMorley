@@ -409,11 +409,18 @@ def validate(config, data_loader, model):
             'Dingo'
         ]
 
-        import pandas as pd
-        cm_df = pd.DataFrame(cm, index=labels, columns=labels)
+        if cm.shape[0] == len(labels):
+            import pandas as pd
+            pd.set_option('display.max_columns', None)
+            pd.set_option('display.width', None)
+            pd.set_option('display.max_rows', None)
 
-        print("\nConfusion Matrix:")
-        print(cm_df)
+            cm_df = pd.DataFrame(cm, index=labels, columns=labels)
+            print("\nConfusion Matrix:")
+            print(cm_df)
+        else:
+            print(f"\n[Warning] Skipping confusion matrix. Confusion matrix shape: {cm.shape}, expected: ({len(labels)}, {len(labels)})")
+
 
 
     return acc1_meter.avg, acc5_meter.avg, loss_meter.avg
