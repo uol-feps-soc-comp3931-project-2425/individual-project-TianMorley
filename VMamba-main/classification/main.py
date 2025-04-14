@@ -395,33 +395,8 @@ def validate(config, data_loader, model):
         all_preds_np = np.concatenate(all_preds)
         all_targets_np = np.concatenate(all_targets)
         cm = confusion_matrix(all_targets_np, all_preds_np)
-
-        labels = [
-            'Shih-Tzu',
-            'Rhodesian Ridgeback',
-            'Beagle',
-            'English Foxhound',
-            'Australian Terrier',
-            'Border Terrier',
-            'Golden Retriever',
-            'Old English Sheepdog',
-            'Samoyed',
-            'Dingo'
-        ]
-
-        if cm.shape[0] == len(labels):
-            import pandas as pd
-            pd.set_option('display.max_columns', None)
-            pd.set_option('display.width', None)
-            pd.set_option('display.max_rows', None)
-
-            cm_df = pd.DataFrame(cm, index=labels, columns=labels)
-            print("\nConfusion Matrix:")
-            print(cm_df)
-        else:
-            print(f"\n[Warning] Skipping confusion matrix. Confusion matrix shape: {cm.shape}, expected: ({len(labels)}, {len(labels)})")
-
-
+        print("\nConfusion Matrix:")
+        print(cm)
 
     return acc1_meter.avg, acc5_meter.avg, loss_meter.avg
 
