@@ -33,7 +33,7 @@ from utils.optimizer import build_optimizer
 from utils.logger import create_logger
 from utils.utils import  NativeScalerWithGradNormCount, auto_resume_helper, reduce_tensor
 from utils.utils import load_checkpoint_ema, load_pretrained_ema, save_checkpoint_ema
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, f1_score
 import numpy as np
 
 from fvcore.nn import FlopCountAnalysis, flop_count_str, flop_count
@@ -397,6 +397,9 @@ def validate(config, data_loader, model):
         cm = confusion_matrix(all_targets_np, all_preds_np)
         print("\nConfusion Matrix:")
         print(cm)
+    
+    f1 = f1_score(all_targets_np, all_preds_np, average='macro')
+    print(f"\nF1 Score (Macro): {f1:.4f}")
 
     return acc1_meter.avg, acc5_meter.avg, loss_meter.avg
 
