@@ -16,7 +16,7 @@ import argparse
 import datetime
 import tqdm
 import numpy as np
-
+import math
 import torch
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
@@ -43,6 +43,27 @@ from timm.utils import ModelEma as ModelEma
 if torch.multiprocessing.get_start_method() != "spawn":
     print(f"||{torch.multiprocessing.get_start_method()}||", end="")
     torch.multiprocessing.set_start_method("spawn", force=True)
+
+
+def get_2d_fourier_positional_encoding(H, W, dim, device):
+    assert dim % 4 == 0, "Embedding dim must be divisible by 4"
+    dim_half = dim // 2
+
+    y_pos = torch.arange(H, dtype=torch.float32, device=device).unsqueeze(1).repeat(1, W)
+    x_pos = torch.arange(W, dtype=torch.float32, device=device).unsqueeze(0).repeat(H, 1)
+
+    div_term = torch.exp(
+        torch.arange(0, dim_half, 2, dtype=torch.float32, device=device)
+        * -(math.log(10000.0) / dim_half)
+    )
+
+    pos_x = x_pos.unsqueeze(-1) * div_term
+    pos_y = y_pos.unsqueeze(-1) * div_term
+
+    pe_x = torch.cat([torch.sin(pos_x), torch.cos(pos_x)], dim=-1)
+    pe_y = torch.cat([torch.sin(pos_y), torch.cos(pos_y)], dim=-1)
+
+    return torch.cat([pe_y, pe_x], dim=-1)  # Shape: (H, W, dim)
 
 
 
@@ -291,11 +312,22 @@ def train_one_epoch(config, model, criterion, data_loader, optimizer, epoch, mix
             samples, targets = mixup_fn(samples, targets)
 
         data_time.update(time.time() - end)
+        
+        if config.MODEL.VSSM.POSEMBED:
+            B, C, H, W = samples.shape
+            pe = get_2d_fourier_positional_encoding(H, W, C, device=samples.device)
+            samples = samples + pe.permute(2, 0, 1).unsqueeze(0)  # shape: (1, C, H, W)
+
+        
 
         with torch.cuda.amp.autocast(enabled=config.AMP_ENABLE):
             outputs = model(samples)
+            
         loss = criterion(outputs, targets)
         loss = loss / config.TRAIN.ACCUMULATION_STEPS
+        
+        
+
 
         # this attribute is added by timm on one optimizer (adahessian)
         is_second_order = hasattr(optimizer, 'is_second_order') and optimizer.is_second_order
