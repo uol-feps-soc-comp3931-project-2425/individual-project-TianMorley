@@ -42,7 +42,7 @@ jobs:
 
         api = HfApi()
         api.upload_file(
-        path="/tmp/data/imagewoof2/train/n02086240/ILSVRC2012_val_00000907.JPEG",
+        path_or_fileobj="/tmp/data/imagewoof2/train/n02086240/ILSVRC2012_val_00000907.JPEG",
         path_in_repo="train/n02086240/ILSVRC2012_val_00000907.JPEG",
         repo_id="TT2002/gauss_imagewoof",
         repo_type="dataset",
