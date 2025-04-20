@@ -2,10 +2,6 @@ name: Add Gaussian Noise and Upload Dataset
 
 on:
   workflow_dispatch:
-    inputs: {}
-    # Limit the manual trigger to a specific branch
-    branches: [ActionTesting]
-
 
 jobs:
   add-noise:
