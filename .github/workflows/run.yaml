@@ -21,14 +21,19 @@ jobs:
         pip install --upgrade huggingface_hub numpy pillow tqdm opencv-python tqdm
 
     - name: Download dataset from Hugging Face
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: |
         mkdir -p /tmp/data
-        wget -O /tmp/data/imagewoof2.tgz https://huggingface.co/datasets/TT2002/imagewoofprivate/resolve/main/imagewoof2.tgz
+        wget --header="Authorization: Bearer $HF_TOKEN" \
+            -O /tmp/data/imagewoof2.tgz \
+            https://huggingface.co/datasets/TT2002/imagewoofprivate/resolve/main/imagewoof2.tgz
         tar -xzf /tmp/data/imagewoof2.tgz -C /tmp/data
+
 
     - name: Run noiselinux.py on dataset
       run: |
-        python noiselinux.py /tmp/data/imagewoof2 /tmp/data/gauss_imagewoof
+        python actionfiles/noiselinux.py /tmp/data/imagewoof2 /tmp/data/gauss_imagewoof
 
     - name: Zip the noisy dataset
       run: |
