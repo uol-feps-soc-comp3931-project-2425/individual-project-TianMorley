@@ -21,7 +21,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install huggingface_hub numpy pillow
+        pip install huggingface_hub numpy pillow opencv-python tqdm
 
     - name: Download dataset from Hugging Face
       run: |
