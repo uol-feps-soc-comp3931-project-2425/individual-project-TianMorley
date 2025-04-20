@@ -31,7 +31,7 @@ jobs:
         tar -xzf /tmp/data/imagewoof2.tgz -C /tmp/data
 
 
-    - name: Run lowres.py on dataset
+    - name: Run lowreslinux.py on dataset
       run: |
         python actionfiles/lowreslinux.py
 
