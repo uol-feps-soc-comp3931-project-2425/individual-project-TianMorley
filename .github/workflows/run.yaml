@@ -1,15 +1,19 @@
-name: Run filecountlinux.py on dataset
+name: Add Gaussian Noise and Upload Dataset
 
 on:
-  push:
-    branches: [ActionTesting]  # or "main" 
+  workflow_dispatch:
+    inputs: {}
+    # Limit the manual trigger to a specific branch
+    branches: [ActionTesting]
+
 
 jobs:
-  filecount:
+  add-noise:
+    if: github.ref == 'refs/heads/ActionTesting'
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
+    - name: Checkout repository
       uses: actions/checkout@v3
 
     - name: Set up Python
@@ -19,15 +23,29 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install gdown
+        pip install huggingface_hub numpy pillow
 
-    - name: Download and extract dataset from Hugging Face
+    - name: Download dataset from Hugging Face
       run: |
         mkdir -p /tmp/data
         wget -O /tmp/data/imagewoof2.tgz https://huggingface.co/datasets/TT2002/imagewoofprivate/resolve/main/imagewoof2.tgz
         tar -xzf /tmp/data/imagewoof2.tgz -C /tmp/data
 
-
-    - name: Run filecountlinux.py
+    - name: Run noiselinux.py on dataset
       run: |
-        python filecountlinux.py /tmp/data/imagewoof2
+        python noiselinux.py /tmp/data/imagewoof2 /tmp/data/gauss_imagewoof
+
+    - name: Upload noisy dataset to Hugging Face
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        python -c "
+from huggingface_hub import HfApi
+api = HfApi()
+api.upload_folder(
+    repo_id='TT2002/gauss_imagewoof',
+    repo_type='dataset',
+    folder_path='/tmp/data/gauss_imagewoof',
+    token='${{ env.HF_TOKEN }}'
+)"
+
