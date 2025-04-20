@@ -36,16 +36,18 @@ jobs:
         python noiselinux.py /tmp/data/imagewoof2 /tmp/data/gauss_imagewoof
 
     - name: Upload noisy dataset to Hugging Face
-      env:
-        HF_TOKEN: ${{ secrets.HF_TOKEN }}
-      run: |
-        python -c "
-from huggingface_hub import HfApi
-api = HfApi()
-api.upload_folder(
-    repo_id='TT2002/gauss_imagewoof',
-    repo_type='dataset',
-    folder_path='/tmp/data/gauss_imagewoof',
-    token='${{ env.HF_TOKEN }}'
-)"
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+    run: |
+      python <<EOF
+      from huggingface_hub import HfApi
+      api = HfApi()
+      api.upload_folder(
+          repo_id='TT2002/gauss_imagewoof',
+          repo_type='dataset',
+          folder_path='/tmp/data/gauss_imagewoof',
+          token='${{ env.HF_TOKEN }}'
+      )
+      EOF
+
 
