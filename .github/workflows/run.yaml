@@ -31,7 +31,7 @@ jobs:
       run: |
         python noiselinux.py /tmp/data/imagewoof2 /tmp/data/gauss_imagewoof
 
-      - name: Zip the noisy dataset
+    - name: Zip the noisy dataset
       run: |
         cd /tmp/data
         zip -r gauss_imagewoof.zip gauss_imagewoof
