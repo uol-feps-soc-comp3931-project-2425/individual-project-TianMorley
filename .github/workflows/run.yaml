@@ -1,0 +1,32 @@
+name: Run filecountlinux.py on dataset
+
+on:
+  push:
+    branches: [ActionTesting]  # or "main" 
+
+jobs:
+  filecount:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        pip install gdown
+
+    - name: Download dataset from Google Drive
+      run: |
+        mkdir -p /tmp/data
+        gdown --id 1gecTDqDceEcJYSSOK9zQdX2krL8wkTvI -O /tmp/data/test.zip
+        unzip -q /tmp/data/test.zip -d /tmp/data
+
+    - name: Run filecount.py
+      run: |
+        python filecount.py /tmp/data/imagewoof2
