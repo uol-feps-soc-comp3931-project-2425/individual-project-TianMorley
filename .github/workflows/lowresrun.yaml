@@ -21,10 +21,15 @@ jobs:
         pip install --upgrade huggingface_hub numpy pillow tqdm opencv-python
 
     - name: Download dataset from Hugging Face
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: |
         mkdir -p /tmp/data
-        wget -O /tmp/data/imagewoof2.tgz https://huggingface.co/datasets/TT2002/imagewoofprivate/resolve/main/imagewoof2.tgz
+        wget --header="Authorization: Bearer $HF_TOKEN" \
+            -O /tmp/data/imagewoof2.tgz \
+            https://huggingface.co/datasets/TT2002/imagewoofprivate/resolve/main/imagewoof2.tgz
         tar -xzf /tmp/data/imagewoof2.tgz -C /tmp/data
+
 
     - name: Run lowres.py on dataset
       run: |
