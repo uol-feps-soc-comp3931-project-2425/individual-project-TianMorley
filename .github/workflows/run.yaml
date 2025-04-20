@@ -29,9 +29,9 @@ jobs:
         wget -O /tmp/data/imagewoof2.tgz https://huggingface.co/datasets/TT2002/imagewoofprivate/resolve/main/imagewoof2.tgz
         tar -xzf /tmp/data/imagewoof2.tgz -C /tmp/data
 
-    - name: Run noiselinux.py on dataset
-      run: |
-        python noiselinux.py /tmp/data/imagewoof2 /tmp/data/gauss_imagewoof
+    # - name: Run noiselinux.py on dataset
+    #   run: |
+    #     python noiselinux.py /tmp/data/imagewoof2 /tmp/data/gauss_imagewoof
 
     - name: Upload noisy dataset to Hugging Face
       env:
@@ -41,11 +41,12 @@ jobs:
         from huggingface_hub import HfApi
 
         api = HfApi()
-        api.upload_folder(
-            repo_id='TT2002/gauss_imagewoof',
-            repo_type='dataset',
-            folder_path='/tmp/data/gauss_imagewoof',
-            token='${{ env.HF_TOKEN }}'
+        api.upload_file(
+        path_or_file="/tmp/data/imagewoof2/train/n02086240/ILSVRC2012_val_00000907.JPEG",
+        path_in_repo="train/n02086240/ILSVRC2012_val_00000907.JPEG",
+        repo_id="TT2002/gauss_imagewoof",
+        repo_type="dataset",
+        token="${{ env.HF_TOKEN }}"
         )
         EOF
 

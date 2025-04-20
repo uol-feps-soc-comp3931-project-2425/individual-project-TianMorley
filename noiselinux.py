@@ -34,4 +34,3 @@ for root, dirs, files in os.walk(input_dir):
         output_filename = f"gaussian_{filename}"
         output_filepath = os.path.join(output_subfolder, output_filename)
         cv2.imwrite(output_filepath, noisy_image)
-#test
