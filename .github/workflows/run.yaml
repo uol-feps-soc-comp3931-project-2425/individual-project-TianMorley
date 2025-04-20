@@ -28,6 +28,6 @@ jobs:
         tar -xzf /tmp/data/imagewoof2.tgz -C /tmp/data
 
 
-    - name: Run filecount.py
+    - name: Run filecountlinux.py
       run: |
-        python filecount.py /tmp/data/imagewoof2
+        python filecountlinux.py /tmp/data/imagewoof2
