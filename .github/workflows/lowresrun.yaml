@@ -33,7 +33,7 @@ jobs:
 
     - name: Run lowres.py on dataset
       run: |
-        python actionfiles/lowres.py
+        python actionfiles/lowreslinux.py
 
     - name: Zip the lowres dataset
       run: |
