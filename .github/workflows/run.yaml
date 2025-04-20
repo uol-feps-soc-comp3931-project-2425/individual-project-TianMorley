@@ -1,9 +1,7 @@
 name: Add Gaussian Noise and Upload Dataset
 
 on:
-  push:
-    branches: [ActionTesting]
-
+  workflow_dispatch:
 
 jobs:
   add-noise:
@@ -29,11 +27,16 @@ jobs:
         wget -O /tmp/data/imagewoof2.tgz https://huggingface.co/datasets/TT2002/imagewoofprivate/resolve/main/imagewoof2.tgz
         tar -xzf /tmp/data/imagewoof2.tgz -C /tmp/data
 
-    # - name: Run noiselinux.py on dataset
-    #   run: |
-    #     python noiselinux.py /tmp/data/imagewoof2 /tmp/data/gauss_imagewoof
+    - name: Run noiselinux.py on dataset
+      run: |
+        python noiselinux.py /tmp/data/imagewoof2 /tmp/data/gauss_imagewoof
 
-    - name: Upload noisy dataset to Hugging Face
+      - name: Zip the noisy dataset
+      run: |
+        cd /tmp/data
+        zip -r gauss_imagewoof.zip gauss_imagewoof
+
+    - name: Upload zipped noisy dataset to Hugging Face
       env:
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: |
@@ -42,22 +45,22 @@ jobs:
 
         api = HfApi()
         
+        # Create the repo if it doesn't exist
         try:
             api.create_repo(
                 repo_id="TT2002/gauss_imagewoof",
                 repo_type="dataset",
-                private=False  # Set to True if you want it private
+                private=False
             )
         except Exception as e:
             print(f"Repo may already exist: {e}")
-            
+
+        # Upload the zipped dataset
         api.upload_file(
-            path_or_fileobj="/tmp/data/imagewoof2/train/n02086240/ILSVRC2012_val_00000907.JPEG",
-            path_in_repo="train/n02086240/ILSVRC2012_val_00000907.JPEG",
+            path_or_fileobj="/tmp/data/gauss_imagewoof.zip",
+            path_in_repo="gauss_imagewoof.zip",
             repo_id="TT2002/gauss_imagewoof",
             repo_type="dataset",
             token="${{ env.HF_TOKEN }}"
         )
         EOF
-
-
