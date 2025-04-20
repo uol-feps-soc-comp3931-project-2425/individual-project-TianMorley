@@ -24,7 +24,7 @@ jobs:
     - name: Download dataset from Google Drive
       run: |
         mkdir -p /tmp/data
-        gdown --id 1gecTDqDceEcJYSSOK9zQdX2krL8wkTvI -O /tmp/data/test.zip 
+        gdown --fuzzy https://drive.google.com/file/d/1gecTDqDceEcJYSSOK9zQdX2krL8wkTvI/view?usp=sharing -O /tmp/data/test.zip 
         unzip -q /tmp/data/test.zip -d /tmp/data
 
     - name: Run filecount.py
