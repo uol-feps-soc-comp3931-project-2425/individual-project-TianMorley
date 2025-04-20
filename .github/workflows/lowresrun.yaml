@@ -1,0 +1,64 @@
+name: Add Low Resolution and Upload Dataset
+
+on:
+  workflow_dispatch:
+
+jobs:
+  lowres-downsample:
+    if: github.ref == 'refs/heads/ActionTesting'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        pip install --upgrade huggingface_hub numpy pillow tqdm opencv-python
+
+    - name: Download dataset from Hugging Face
+      run: |
+        mkdir -p /tmp/data
+        wget -O /tmp/data/imagewoof2.tgz https://huggingface.co/datasets/TT2002/imagewoofprivate/resolve/main/imagewoof2.tgz
+        tar -xzf /tmp/data/imagewoof2.tgz -C /tmp/data
+
+    - name: Run lowres.py on dataset
+      run: |
+        python actionfiles/lowres.py
+
+    - name: Zip the lowres dataset
+      run: |
+        cd /tmp/data
+        zip -r lowres_imagewoof.zip lowres_imagewoof
+
+    - name: Upload zipped lowres dataset to Hugging Face
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        python - <<EOF
+        from huggingface_hub import HfApi
+
+        api = HfApi()
+        
+        try:
+            api.create_repo(
+                repo_id="TT2002/lowres_imagewoof",
+                repo_type="dataset",
+                private=False
+            )
+        except Exception as e:
+            print(f"Repo may already exist: {e}")
+
+        api.upload_file(
+            path_or_fileobj="/tmp/data/lowres_imagewoof.zip",
+            path_in_repo="lowres_imagewoof.zip",
+            repo_id="TT2002/lowres_imagewoof",
+            repo_type="dataset",
+            token="${{ env.HF_TOKEN }}"
+        )
+        EOF
