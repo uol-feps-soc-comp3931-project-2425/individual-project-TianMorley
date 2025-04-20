@@ -21,7 +21,7 @@ jobs:
       run: |
         pip install gdown
 
-   - name: Download and extract dataset from Hugging Face
+    - name: Download and extract dataset from Hugging Face
       run: |
         mkdir -p /tmp/data
         wget -O /tmp/data/imagewoof2.tgz https://huggingface.co/datasets/TT2002/imagewoofprivate/resolve/main/imagewoof2.tgz
