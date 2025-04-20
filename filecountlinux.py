@@ -9,10 +9,17 @@ def count_files_in_directory(directory):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python filecount.py <directory>")
+        print("Usage: python filecount.py <root_directory>")
         sys.exit(1)
 
-    directory_path = sys.argv[1]
-    total_files = count_files_in_directory(directory_path)
+    root_dir = sys.argv[1]
 
-    print(f"Total files in '{directory_path}': {total_files}")
+    total = 0
+    for subfolder in os.listdir(root_dir):
+        sub_path = os.path.join(root_dir, subfolder)
+        if os.path.isdir(sub_path):
+            count = count_files_in_directory(sub_path)
+            print(f"{subfolder}: {count} files")
+            total += count
+
+    print(f"Total files in '{root_dir}': {total}")
