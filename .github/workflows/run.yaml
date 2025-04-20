@@ -1,7 +1,9 @@
 name: Add Gaussian Noise and Upload Dataset
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ActionTesting]
+
 
 jobs:
   add-noise:
