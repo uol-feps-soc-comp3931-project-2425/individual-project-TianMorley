@@ -21,11 +21,12 @@ jobs:
       run: |
         pip install gdown
 
-    - name: Download dataset from Google Drive
+   - name: Download and extract dataset from Hugging Face
       run: |
         mkdir -p /tmp/data
-        gdown --fuzzy https://drive.google.com/file/d/1gecTDqDceEcJYSSOK9zQdX2krL8wkTvI/view?usp=sharing -O /tmp/data/test.zip 
-        unzip -q /tmp/data/test.zip -d /tmp/data
+        wget -O /tmp/data/imagewoof2.tgz https://huggingface.co/datasets/TT2002/imagewoofprivate/resolve/main/imagewoof2.tgz
+        tar -xzf /tmp/data/imagewoof2.tgz -C /tmp/data
+
 
     - name: Run filecount.py
       run: |
