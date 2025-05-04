@@ -8,8 +8,8 @@ os.makedirs(output_root, exist_ok=True)
 
 def downsample_image(image, scale=10):
     h, w = image.shape[:2]
-    small = cv2.resize(image, (w // scale, h // scale), interpolation=cv2.INTER_LINEAR)
-    return cv2.resize(small, (w, h), interpolation=cv2.INTER_CUBIC)
+    small = cv2.resize(image, (w // scale, h // scale), interpolation=cv2.INTER_NEAREST)
+    return cv2.resize(small, (w, h), interpolation=cv2.INTER_NEAREST)
 
 print(" Starting recursive downsampling...")
 
