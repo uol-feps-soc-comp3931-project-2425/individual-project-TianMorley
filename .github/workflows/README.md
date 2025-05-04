@@ -1,4 +1,4 @@
-This repo includes two GitHub Actions workflows to automate dataset preprocessing:
+This folder includes two GitHub Actions workflows to automate dataset preprocessing:
 
 run.yaml
 → Runs noiselinux.py to add Gaussian noise to all images in the dataset and uploads the result to Hugging Face (gauss_imagewoof).
