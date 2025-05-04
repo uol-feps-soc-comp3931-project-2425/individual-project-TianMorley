@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 # Paths
 input_dir = "../imagewoof2-full\imagewoof2"          # e.g., contains subfolders like train/, val/
-output_dir = "imagewoofnoisysplit" # Where you'll save the noisy versions
+output_dir = "imagewoofnoisysplit"  #Noisy path
 os.makedirs(output_dir, exist_ok=True)
 
 def add_gaussian_noise(image, mean=0, std=25):

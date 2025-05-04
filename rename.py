@@ -1,9 +1,9 @@
 import os
 
-# Path to the root of your dataset (containing 'train', 'val', 'test')
+# Path to the root of dataset
 dataset_root = r"..\imagewoof2-full\imagewoof2"  
 
-# Synset ID to breed name mapping
+#rename breeds
 synset_to_breed = {
     'n02086240': 'Shih-Tzu',
     'n02087394': 'Rhodesian Ridgeback',
