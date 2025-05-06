@@ -8,7 +8,6 @@ All the cells are required to run in order or the code will fail. The paths for 
 
 Denotes the standardised training pipeline. To use it with a different model, replace the `load_model` section with your relevant model:
 
-```python
 # ConvNeXt-Tiny
 from torchvision.models import convnext_tiny
 model = convnext_tiny()
