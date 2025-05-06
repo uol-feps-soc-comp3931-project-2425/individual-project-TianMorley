@@ -19,6 +19,13 @@ The following modifications were made to support experimental extensions:
   Defined in `main.py` at **line 47**, applied at **line 318**.  
   Adds fixed sinusoidal encoding to the input image tensor to embed spatial information into early representations.
 
+- **Evaluation Metrics**
+  Implemented in `main.py` at **line 426**
+  Gives more detailed insights into model performance
+
+- **Head Weight Flexibility**
+  Implemented in `config.py` at **line 60**
+  
 ---
 
 ### Notes
