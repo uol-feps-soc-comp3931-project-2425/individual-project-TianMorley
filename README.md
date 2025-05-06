@@ -1,25 +1,41 @@
-# Individual Project - Tian Morley
+# Project Notebooks
 
-## Repository Structure
+This directory contains all the Jupyter notebooks used during the project. Each notebook serves a specific purpose, either for model training, experimentation, or for documenting an approach included in the report. 
 
-### `.github/workflows/`
-Contains GitHub Actions YAML files used for automating tests, preprocessing, and training pipelines. 
+All the cells are required to run in order or the code will fail. The paths for datasets also must be changed for whichever dataset you are using. 
 
-### `Local_development/`
-Scripts and utilities that were developed and tested locally. This includes core data processing scripts such as noise injection, resolution adjustment, and dataset splitting. These were the foundation for validating preprocessing pipelines prior to their use in cloud-based training.
+## Deit-Small
 
-### `VMambaTM/`
-Contains the implementation and configuration of the **VMambaTM** model architecture. 
+Denotes the standardised training pipeline. To use it with a different model, replace the `load_model` section with your relevant model:
 
-### `actionfiles/`
-Linux-adapted versions of selected scripts from the `Local_development/` folder, tailored specifically for execution within GitHub Actions workflows. These ensure compatibility across OS environments.
+```python
+# ConvNeXt-Tiny
+from torchvision.models import convnext_tiny
+model = convnext_tiny()
 
-##  Documentation
+# DeiT III Small
+from timm import create_model
+model = create_model('deit3_small_patch16_224', pretrained=True)
 
-Further details about the design, rationale, and technical decisions are provided in the accompanying report. Each folder also includes its own `README.md` for specific documentation and usage.
+# Swin-Tiny
+from timm import create_model
+model = create_model('swin_tiny_patch4_window7_224', pretrained=True)
 
-##  Usage
+# EfficientNetV2-Small
+from timm import create_model
+model = create_model('efficientnetv2_s', pretrained=True)
 
-To clone the repository and begin working:
-```bash
-git clone https://github.com/uol-feps-soc-comp3931-project-2425/individual-project-TianMorley.git
+# Project Notebooks
+
+## convnext-kfold
+
+Denotes the k-fold pipeline implementation, which was scrapped from the final pipeline. Its inclusion here is for reproducibility of explanations in the report.
+
+## VMambaTM
+
+The VMambaTM notebook is separate due to having different requirements for running. The notebook trains as implemented, but if you want to load a checkpoint, you must add the `--resume` command-line argument with the path to your checkpoint.
+
+To test a checkpoint, you must use both `--eval` and `--resume`, specifying the checkpoint path you want to evaluate.
+
+
+
