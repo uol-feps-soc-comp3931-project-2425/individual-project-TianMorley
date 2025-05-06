@@ -1,6 +1,6 @@
-# VMamba™
+# VMambaTM
 
-This folder and its subdirectories contain the VMamba™ model implementation, as described in the accompanying report.  
+This folder and its subdirectories contain the VMambTM model implementation, as described in the accompanying report.  
 The original `README.md` from the VMamba authors is included for licensing purposes and as a reference for setup, usage, and architecture details.
 
 ## Custom Modifications
